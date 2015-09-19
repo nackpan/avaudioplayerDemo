@@ -10,7 +10,6 @@ import UIKit
 import MediaPlayer
 import AVFoundation
 
-
 class ViewController: UIViewController, MPMediaPickerControllerDelegate {
 
     var audioPlayer:AVAudioPlayer?
@@ -79,7 +78,6 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
                 // 戻る
                 return
                 
-                
             }
             
             // 再生開始
@@ -96,8 +94,6 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
             
             audioPlayer = nil
         }
-
-
         
         // ピッカーを閉じ、破棄する
         mediaPicker.dismissViewControllerAnimated(true, completion: nil)
