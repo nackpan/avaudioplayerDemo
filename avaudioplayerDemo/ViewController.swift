@@ -12,9 +12,10 @@ import AVFoundation
 
 class ViewController: UIViewController, MPMediaPickerControllerDelegate {
 
+    // プレイヤー用のproperty
     var audioPlayer:AVAudioPlayer?
-    
-    
+
+
     @IBOutlet weak var messageLabel: UILabel!
     
     override func viewDidLoad() {
@@ -45,21 +46,24 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
     // メディアアイテムピッカーでアイテムを選択完了したときに呼び出される
     func mediaPicker(mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         
+        // このfunctionを抜ける際にピッカーを閉じ、破棄する
+        // (defer文はfunctionを抜ける際に実行される)
+        defer {
+            dismissViewControllerAnimated(true, completion: nil)
+        }
+        
+        
         // 選択した曲情報がmediaItemCollectionに入っている
         // mediaItemCollection.itemsから入っているMPMediaItemの配列を取得できる
         let items = mediaItemCollection.items
-        if items.count == 0 {
+        if items.isEmpty {
             // itemが一つもなかったので戻る
-            
-            // その前にピッカーを閉じ、破棄する
-            mediaPicker.dismissViewControllerAnimated(true, completion: nil)
-            
             return
         }
         
         // 先頭のMPMediaItemを取得し、そのassetURLからプレイヤーを作成する
         let item = items[0]
-        if let url: NSURL = item.assetURL {
+        if let url = item.assetURL {
             do {
                 // itemのassetURLからプレイヤーを作成する
                 audioPlayer = try AVAudioPlayer(contentsOfURL: url)
@@ -70,10 +74,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
                 messageLabel.text = "このurlは再生できません"
                 
                 audioPlayer = nil
-                
-                
-                // ピッカーを閉じ、破棄する
-                mediaPicker.dismissViewControllerAnimated(true, completion: nil)
+
                 
                 // 戻る
                 return
@@ -84,8 +85,10 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
             if let player = audioPlayer {
                 player.play()
                 
-                // メッセージラベルのテキストをクリア
-                messageLabel.text = ""
+                // メッセージラベルに曲タイトルを表示
+                // (MPMediaItemが曲情報を持っているのでそこから取得)
+                let title = item.title ?? ""
+                messageLabel.text = title
                 
             }
         } else {
@@ -95,16 +98,13 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
             audioPlayer = nil
         }
         
-        // ピッカーを閉じ、破棄する
-        mediaPicker.dismissViewControllerAnimated(true, completion: nil)
-        
     }
     
     
     //選択がキャンセルされた場合に呼ばれる
     func mediaPickerDidCancel(mediaPicker: MPMediaPickerController) {
         // ピッカーを閉じ、破棄する
-        mediaPicker.dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
 
@@ -128,10 +128,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
             player.stop()
         }
     }
-
-    
-
-    
+ 
 
 }
 
